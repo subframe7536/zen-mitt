@@ -1,6 +1,20 @@
-## zen-mitt
+# zen-mitt
 
 light-weight(187B min+gzip) typesafe event emitter
+
+## Install
+
+```sh
+npm install zen-mitt
+```
+```sh
+yarn add zen-mitt
+```
+```sh
+pnpm add zen-mitt
+```
+
+## Usage
 
 ```ts
 import { mitt } from 'zen-mitt'
