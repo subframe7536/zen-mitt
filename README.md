@@ -3,6 +3,8 @@
 light-weight(187B min+gzip) typesafe event emitter
 
 ```ts
+import { mitt } from 'zen-mitt'
+
 const events = mitt<{
   foo: number
   arr: string[]
@@ -20,3 +22,15 @@ events.emit('param', 'test', 1)
 
 events.off() // clear all listeners
 ```
+
+### Class version
+
+```ts
+import { Mitt } from 'zen-mitt'
+
+const events = new Mitt()
+```
+
+## License
+
+MIT

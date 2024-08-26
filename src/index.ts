@@ -1,5 +1,3 @@
-/* eslint-disable style/indent */
-/* eslint-disable antfu/top-level-function */
 import type { ParseParameters } from '@subframe7536/type-utils'
 
 type EventHandler<T> = (...data: ParseParameters<T>) => void
@@ -63,10 +61,44 @@ export const mitt = <Events extends Record<string, unknown>>(
     map.get(event)?.slice().map(handler => handler(...data))
   },
   once(event, handler) {
-    let fn = (...args: any) => {
+    let fn = (...args: any): any => {
       handler(...args)
       this.off(event, fn)
     }
     this.on(event, fn)
   },
 })
+
+export class Mitt<Events extends Record<string, unknown>> implements Emitter<Events> {
+  /**
+   * Class version of {@link mitt}
+   */
+  constructor(
+    public map: Map<keyof Events, EventHandler<any>[]> = new Map(),
+  ) { }
+
+  on<Event extends keyof Events>(event: Event, handler: EventHandler<Events[Event]>): void {
+    this.map.get(event)?.push(handler) || this.map.set(event, [handler])
+  }
+
+  off<Event extends keyof Events>(event?: Event, handler?: EventHandler<Events[Event]>): void {
+    let handlers
+    event
+      ? handler
+        ? (handlers = this.map.get(event)) && handlers.splice(handlers.indexOf(handler) >>> 0, 1)
+        : this.map.set(event, [])
+      : this.map.clear()
+  }
+
+  emit<Event extends keyof Events>(event: Event, ...data: ParseParameters<Events[Event]>): void {
+    this.map.get(event)?.slice().map(handler => handler(...data))
+  }
+
+  once<Event extends keyof Events>(event: Event, handler: EventHandler<Events[Event]>): void {
+    let fn = (...args: any): any => {
+      handler(...args)
+      this.off(event, fn)
+    }
+    this.on(event, fn)
+  }
+}
