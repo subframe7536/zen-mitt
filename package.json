@@ -1,7 +1,7 @@
 {
   "name": "zen-mitt",
   "type": "module",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "light-weight(187B min+gzip) typesafe event mitter",
   "author": "subframe7536",
   "license": "MIT",
