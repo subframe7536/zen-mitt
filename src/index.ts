@@ -1,25 +1,22 @@
-import type { ParseParameters } from '@subframe7536/type-utils'
-
-type EventHandler<T> = (...data: ParseParameters<T>) => void
-export type Emitter<Events extends Record<string, unknown>> = {
+export type Emitter<Events extends Record<string, any[]>> = {
   /**
    * register an event handler for the given event.
    */
-  on: <Event extends keyof Events>(event: Event, handler: EventHandler<Events[Event]>) => void
+  on: <E extends keyof Events>(event: E, handler: (...data: Events[E]) => void) => void
   /**
    * invoke all handlers for the given event.
    */
-  emit: <Event extends keyof Events>(event: Event, ...data: ParseParameters<Events[Event]>) => void
+  emit: <E extends keyof Events>(event: E, ...data: Events[E]) => void
   /**
    * invoke all handlers for the given event **once**.
    */
-  once: <Event extends keyof Events>(event: Event, handler: EventHandler<Events[Event]>) => void
+  once: <E extends keyof Events>(event: E, handler: (...data: Events[E]) => void) => void
   /**
    * remove an event handler for the given event.
    * if `event` is omitted, all handlers will be removed.
    * if `handler` is omitted, all handlers of `event` will be removed.
    */
-  off: <Event extends keyof Events>(event?: Event, handler?: EventHandler<Events[Event]>) => void
+  off: <E extends keyof Events>(event?: E, handler?: (...data: Events[E]) => void) => void
 }
 
 /**
@@ -27,8 +24,8 @@ export type Emitter<Events extends Record<string, unknown>> = {
  * @param map external events map
  * @example
  * const events = mitt<{
- *   foo: number
- *   arr: string[]
+ *   foo: [data: number]
+ *   arr: [data: string[]]
  *   param: [name: string, age: number]
  * }>()
  * events.on('foo', console.log)
@@ -43,8 +40,8 @@ export type Emitter<Events extends Record<string, unknown>> = {
  *
  * events.off() // clear all listeners
  */
-export const mitt = <Events extends Record<string, unknown>>(
-  map: Map<keyof Events, EventHandler<any>[]> = new Map(),
+export const mitt = <Events extends Record<string, any[]>>(
+  map: Map<keyof Events, Array<(...args: any[]) => void>> = new Map(),
 ): Emitter<Events> => ({
   on(event, handler) {
     map.get(event)?.push(handler) || map.set(event, [handler])
@@ -69,19 +66,19 @@ export const mitt = <Events extends Record<string, unknown>>(
   },
 })
 
-export class Mitt<Events extends Record<string, unknown>> implements Emitter<Events> {
+export class Mitt<Events extends Record<string, any[]>> implements Emitter<Events> {
   /**
    * Class version of {@link mitt}
    */
   constructor(
-    public map: Map<keyof Events, EventHandler<any>[]> = new Map(),
+    public map: Map<keyof Events, Array<(...args: any[]) => void>> = new Map(),
   ) { }
 
-  on<Event extends keyof Events>(event: Event, handler: EventHandler<Events[Event]>): void {
+  on<E extends keyof Events>(event: E, handler: (...data: Events[E]) => void): void {
     this.map.get(event)?.push(handler) || this.map.set(event, [handler])
   }
 
-  off<Event extends keyof Events>(event?: Event, handler?: EventHandler<Events[Event]>): void {
+  off<E extends keyof Events>(event?: E, handler?: (...data: Events[E]) => void): void {
     let handlers
     event
       ? handler
@@ -90,11 +87,11 @@ export class Mitt<Events extends Record<string, unknown>> implements Emitter<Eve
       : this.map.clear()
   }
 
-  emit<Event extends keyof Events>(event: Event, ...data: ParseParameters<Events[Event]>): void {
+  emit<E extends keyof Events>(event: E, ...data: Events[E]): void {
     this.map.get(event)?.slice().map(handler => handler(...data))
   }
 
-  once<Event extends keyof Events>(event: Event, handler: EventHandler<Events[Event]>): void {
+  once<E extends keyof Events>(event: E, handler: (...data: Events[E]) => void): void {
     let fn = (...args: any): any => {
       handler(...args)
       this.off(event, fn)

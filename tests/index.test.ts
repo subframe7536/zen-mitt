@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from 'vitest'
 import { type Emitter, Mitt, mitt } from '../src'
 
-function test(mode: string, getMitt: <E extends Record<string, unknown>>(map?: Map<string, any>) => Emitter<E>) {
+function test(mode: string, getMitt: <E extends Record<string, any[]>>(map?: Map<string, any>) => Emitter<E>) {
   describe(`test ${mode}`, () => {
     it('should trigger multiple handlers', () => {
       const a = vi.fn()
       const b = vi.fn()
-      const events = getMitt<{ foo: undefined }>()
+      const events = getMitt<{ foo: [] }>()
       events.on('foo', a)
       events.on('foo', b)
       events.emit('foo')
@@ -20,7 +20,7 @@ function test(mode: string, getMitt: <E extends Record<string, unknown>>(map?: M
     it('should remove target listener after once() emitted', () => {
       const a = vi.fn()
       const b = vi.fn()
-      const events = getMitt<{ foo: undefined }>()
+      const events = getMitt<{ foo: [] }>()
       events.once('foo', a)
       events.on('foo', b)
       events.emit('foo')
@@ -33,7 +33,7 @@ function test(mode: string, getMitt: <E extends Record<string, unknown>>(map?: M
     it('should remove all listeners after off() called', () => {
       const a = vi.fn()
       const b = vi.fn()
-      const events = getMitt<{ foo: null, bar: null }>()
+      const events = getMitt<{ foo: [], bar: [] }>()
       events.on('foo', a)
       events.on('bar', b)
       events.emit('foo')
@@ -51,8 +51,8 @@ function test(mode: string, getMitt: <E extends Record<string, unknown>>(map?: M
       const arr = vi.fn()
       const param = vi.fn()
       const events = getMitt<{
-        foo: number
-        arr: string[]
+        foo: [data: number]
+        arr: [data: string[]]
         param: [name: string, age: number]
       }>()
       events.on('foo', foo)
@@ -70,7 +70,7 @@ function test(mode: string, getMitt: <E extends Record<string, unknown>>(map?: M
       const a = vi.fn()
       const b = vi.fn()
       map.set('foo', [a, b])
-      const events = getMitt<{ foo: undefined }>(map)
+      const events = getMitt<{ foo: [] }>(map)
       events.emit('foo')
       expect(a).toBeCalledTimes(1)
       expect(b).toBeCalledTimes(1)

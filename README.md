@@ -20,8 +20,8 @@ pnpm add zen-mitt
 import { mitt } from 'zen-mitt'
 
 const events = mitt<{
-  foo: number
-  arr: string[]
+  foo: [data: number]
+  arr: [data: string[]]
   param: [name: string, age?: number]
 }>()
 events.on('foo', console.log)
