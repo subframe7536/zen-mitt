@@ -4,9 +4,10 @@ export default defineConfig({
   dts: true,
   clean: true,
   format: ['esm', 'cjs'],
-  entry: [
-    'src/index.ts',
-  ],
+  entry: {
+    index: './src/index.ts',
+    class: './src/class.ts',
+  },
   external: ['vite', 'esbuild'],
   outDir: 'dist',
 })

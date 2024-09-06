@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from 'vitest'
-import { type Emitter, Mitt, mitt } from '../src'
+import type { Emitter } from '../src/types'
+import { mitt } from '../src/function'
+import { Mitt } from '../src/class'
 
-function test(mode: string, getMitt: <E extends Record<string, any[]>>(map?: Map<string, any>) => Emitter<E>) {
+function testSuite(mode: string, getMitt: <E extends Record<string, any[]>>(map?: Map<string, any>) => Emitter<E>) {
   describe(`test ${mode}`, () => {
     it('should trigger multiple handlers', () => {
       const a = vi.fn()
@@ -78,5 +80,23 @@ function test(mode: string, getMitt: <E extends Record<string, any[]>>(map?: Map
   })
 }
 
-test('function', mitt)
-test('class', map => new Mitt(map))
+testSuite('function', mitt)
+testSuite('class', map => new Mitt(map) as Emitter<any>)
+
+describe('test class extends', () => {
+  class Test extends Mitt<any> {
+    constructor() {
+      super()
+    }
+
+    public test() {
+      // @ts-expect-error err
+      this.emit('test', 1)
+    }
+  }
+  const t = new Test() as Emitter<{ test: [1] }> & Test
+  it('should emit 1', () => {
+    t.test()
+    t.on('test', n => expect(n).toBe(1))
+  })
+})
