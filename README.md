@@ -40,7 +40,7 @@ events.off() // clear all listeners
 ### Class version
 
 ```ts
-import { Mitt } from 'zen-mitt'
+import { Mitt } from 'zen-mitt/class'
 
 const events = new Mitt()
 ```
