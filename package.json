@@ -17,7 +17,9 @@
     "./class": {
       "import": "./dist/class.js",
       "require": "./dist/class.cjs"
-    }
+    },
+    "./dist/*": "./dist/*",
+    "./package.json": "./package.json"
   },
   "main": "dist/index.cjs",
   "module": "dist/index.js",
