@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, mock } from 'bun:test'
 import type { Emitter } from '../src/types'
 import { mitt } from '../src/function'
 import { Mitt } from '../src/class'
@@ -6,8 +6,8 @@ import { Mitt } from '../src/class'
 function testSuite(mode: string, getMitt: <E extends Record<string, any[]>>(map?: Map<string, any>) => Emitter<E>) {
   describe(`test ${mode}`, () => {
     it('should trigger multiple handlers', () => {
-      const a = vi.fn()
-      const b = vi.fn()
+      const a = mock()
+      const b = mock()
       const events = getMitt<{ foo: [] }>()
       events.on('foo', a)
       events.on('foo', b)
@@ -20,8 +20,8 @@ function testSuite(mode: string, getMitt: <E extends Record<string, any[]>>(map?
       expect(b).toBeCalledTimes(2)
     })
     it('should remove target listener after once() emitted', () => {
-      const a = vi.fn()
-      const b = vi.fn()
+      const a = mock()
+      const b = mock()
       const events = getMitt<{ foo: [] }>()
       events.once('foo', a)
       events.on('foo', b)
@@ -33,8 +33,8 @@ function testSuite(mode: string, getMitt: <E extends Record<string, any[]>>(map?
       expect(b).toBeCalledTimes(2)
     })
     it('should remove all listeners after off() called', () => {
-      const a = vi.fn()
-      const b = vi.fn()
+      const a = mock()
+      const b = mock()
       const events = getMitt<{ foo: [], bar: [] }>()
       events.on('foo', a)
       events.on('bar', b)
@@ -49,9 +49,9 @@ function testSuite(mode: string, getMitt: <E extends Record<string, any[]>>(map?
       expect(b).toBeCalledTimes(1)
     })
     it('should typesafe', () => {
-      const foo = vi.fn()
-      const arr = vi.fn()
-      const param = vi.fn()
+      const foo = mock()
+      const arr = mock()
+      const param = mock()
       const events = getMitt<{
         foo: [data: number]
         arr: [data: string[]]
@@ -69,8 +69,8 @@ function testSuite(mode: string, getMitt: <E extends Record<string, any[]>>(map?
     })
     it('should accept an optional event handler map', () => {
       const map = new Map()
-      const a = vi.fn()
-      const b = vi.fn()
+      const a = mock()
+      const b = mock()
       map.set('foo', [a, b])
       const events = getMitt<{ foo: [] }>(map)
       events.emit('foo')
